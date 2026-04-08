@@ -1,0 +1,895 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>学生端 - 作业工作台</title>
+  <style>
+    :root {
+      --bg: #f2eee7;
+      --surface: rgba(255, 255, 255, 0.88);
+      --surface-strong: #ffffff;
+      --ink: #1a2429;
+      --muted: #66727d;
+      --primary: #123c34;
+      --primary-strong: #0b2b25;
+      --accent: #c96f3b;
+      --hero-ink: #fff6ee;
+      --hero-soft: rgba(255, 246, 238, 0.92);
+      --hero-muted: rgba(255, 246, 238, 0.82);
+      --line: rgba(18, 60, 52, 0.12);
+      --soft: #f7f3ed;
+      --shadow: 0 22px 60px rgba(24, 33, 38, 0.12);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 28px;
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(201, 111, 59, 0.14), transparent 30%),
+        radial-gradient(circle at 82% 10%, rgba(18, 60, 52, 0.16), transparent 24%),
+        linear-gradient(180deg, #f8f3eb 0%, #efebe2 100%);
+    }
+
+    .container { max-width: 1240px; margin: 0 auto; }
+    .page-shell { display: flex; flex-direction: column; gap: 22px; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 28px 30px;
+      border-radius: 34px;
+      background: linear-gradient(145deg, #123c34 0%, #1f5a4b 58%, #0b2722 100%);
+      box-shadow: 0 32px 70px rgba(18, 60, 52, 0.22);
+      color: #f7f3ed;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -70px;
+      top: -90px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 72%);
+    }
+
+    .hero-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--hero-muted);
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 28px;
+      height: 1px;
+      background: rgba(247, 243, 237, 0.5);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 56px);
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+      color: var(--hero-ink);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+    }
+
+    .hero p {
+      margin: 16px 0 0;
+      max-width: 620px;
+      line-height: 1.75;
+      color: var(--hero-soft);
+      font-size: 15px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.14);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+      min-width: 220px;
+    }
+
+    .hero-kicker {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--hero-ink);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat {
+      padding: 18px 20px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+    }
+
+    .stat span { display: block; }
+    .stat-label {
+      font-size: 12px;
+      color: var(--hero-muted);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.14);
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--hero-ink);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .stack { display: flex; flex-direction: column; gap: 22px; }
+    h1, h2, h3 { margin: 0; color: var(--primary-strong); }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .section-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.52);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .subcard {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.62);
+      border: 1px solid var(--line);
+    }
+
+    .row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      font-size: 14px;
+      font-family: inherit;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--ink);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: rgba(201, 111, 59, 0.68);
+      box-shadow: 0 0 0 4px rgba(201, 111, 59, 0.12);
+      transform: translateY(-1px);
+    }
+
+    textarea { min-height: 150px; resize: vertical; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent) 0%, #de8d58 100%);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 14px 24px rgba(201, 111, 59, 0.18);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn.secondary {
+      background: rgba(18, 60, 52, 0.06);
+      color: var(--primary);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .hero-actions .btn.secondary {
+      background: rgba(255, 246, 238, 0.16);
+      color: var(--hero-ink);
+      border: 1px solid rgba(255, 246, 238, 0.36);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-actions .btn.secondary:hover {
+      background: rgba(255, 246, 238, 0.24);
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .problem {
+      margin-bottom: 16px;
+      padding: 18px;
+      border-radius: 24px;
+      border: 1px solid rgba(18, 60, 52, 0.1);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 244, 237, 0.9));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    }
+
+    .muted { color: var(--muted); font-size: 12px; line-height: 1.6; }
+
+    .result, .feedback-box {
+      margin-top: 10px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: var(--soft);
+      border: 1px solid rgba(18, 60, 52, 0.1);
+    }
+
+    .feedback-box strong, .feedback-box h4 { color: var(--primary); }
+
+    .status-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 22px;
+    }
+
+    .panel-list > * + * { margin-top: 12px; }
+    .problem .muted + .muted { margin-top: 4px; }
+    ul { margin: 8px 0 0 18px; }
+
+    pre {
+      margin: 8px 0 0;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      background: rgba(18, 60, 52, 0.05);
+      border: 1px solid rgba(18, 60, 52, 0.08);
+      overflow: auto;
+    }
+
+    .hero p,
+    .hero-kicker,
+    .stats,
+    .section-head p {
+      display: none;
+    }
+
+    @media (max-width: 1024px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 16px; }
+      .hero-top, .hero-actions, .section-head {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .row, .stats { grid-template-columns: 1fr; }
+      .card { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="page-shell">
+      <section class="hero">
+        <div class="hero-top">
+          <div>
+            <div class="eyebrow">学生工作台</div>
+            <h1>学生端作业工作台</h1>
+            <p>在同一个页面里完成作业选择、代码提交、版本追踪、最终成绩查看与 AI 学习建议阅读，让提交体验更像一套正式的在线学习产品。</p>
+          </div>
+          <div class="hero-actions">
+            <span class="hero-kicker">在线提交</span>
+            <button class="btn secondary" type="button" onclick="logout()">退出登录</button>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-label">提交流程</span>
+            <span class="stat-value">提交与回看</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">版本记录</span>
+            <span class="stat-value">历史可追踪</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">学习反馈</span>
+            <span class="stat-value">AI 辅助建议</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="grid">
+        <div class="stack">
+          <section class="card">
+            <div class="section-head">
+              <div>
+                <h3>提交设置</h3>
+                <p>填写账号、版本说明与评测超时参数，然后加载当前作业。</p>
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label>学生账号</label>
+                <input id="studentName" placeholder="请输入学生账号" />
+              </div>
+              <div>
+                <label>超时限制（秒）</label>
+                <input id="timeout" type="number" min="1" max="10" value="3" />
+              </div>
+            </div>
+            <div style="margin-top:14px;">
+              <label>版本提交说明</label>
+              <input id="commitMessage" placeholder="例如：修复文件读写错误，补充边界情况处理" />
+            </div>
+            <div class="row" style="margin-top:14px;">
+              <div>
+                <label>选择作业</label>
+                <select id="assignmentSelect"></select>
+              </div>
+              <div class="subcard">
+                <div class="muted">当前作业信息</div>
+                <div id="assignmentInfo" style="margin-top:8px;"></div>
+              </div>
+            </div>
+            <div class="toolbar" style="margin-top:16px;">
+              <button class="btn secondary" type="button" onclick="loadAssignment()">加载作业</button>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="section-head">
+              <div>
+                <h3>题目编辑区</h3>
+                <p>按题填写代码或上传文件，提交后会自动生成新版本并返回即时建议。</p>
+              </div>
+            </div>
+            <div id="problemList" class="panel-list"></div>
+            <div class="toolbar" style="margin-top:16px;">
+              <button class="btn" type="button" onclick="submitAssignment()">提交作业并生成新版本</button>
+              <span class="muted status-inline" id="submitStatus"></span>
+            </div>
+            <div id="submitFeedback" style="margin-top:12px;"></div>
+          </section>
+        </div>
+
+        <div class="stack">
+          <section class="card">
+            <div class="section-head">
+              <div>
+                <h3>版本与成绩</h3>
+                <p>查看最终分策略、历史版本及整体学习建议。</p>
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <button class="btn secondary" type="button" onclick="loadVersions()">刷新版本历史</button>
+              </div>
+              <div>
+                <select id="finalPolicy">
+                  <option value="last">最终成绩策略：last</option>
+                  <option value="best">最终成绩策略：best</option>
+                </select>
+              </div>
+            </div>
+            <div class="toolbar" style="margin-top:12px;">
+              <button class="btn secondary" type="button" onclick="loadFinalScore()">查看最终成绩</button>
+              <button class="btn secondary" type="button" onclick="loadOverallFeedback()">查看我的总体建议</button>
+            </div>
+            <div class="muted" id="finalScoreInfo" style="margin-top:10px;"></div>
+            <div id="overallFeedback" style="margin-top:12px;"></div>
+            <div id="versionList" class="muted" style="margin-top:12px;">请选择作业后查看版本历史</div>
+          </section>
+
+          <section class="card">
+            <div class="section-head">
+              <div>
+                <h3>提交历史</h3>
+                <p>保留旧接口返回的提交记录，便于和版本数据对照查看。</p>
+              </div>
+            </div>
+            <div id="historyList" class="muted">请选择作业查看提交历史</div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+<script>
+    const assignmentSelect = document.getElementById("assignmentSelect");
+    const assignmentInfo = document.getElementById("assignmentInfo");
+    const problemList = document.getElementById("problemList");
+    const submitStatus = document.getElementById("submitStatus");
+    const submitButton = document.querySelector('button[onclick="submitAssignment()"]');
+    const historyList = document.getElementById("historyList");
+    const versionList = document.getElementById("versionList");
+    const finalScoreInfo = document.getElementById("finalScoreInfo");
+    const submitFeedback = document.getElementById("submitFeedback");
+    const overallFeedback = document.getElementById("overallFeedback");
+    const SESSION_KEY = "os_judge_session_v1";
+    let currentAssignment = null;
+    let submitStatusTimer = null;
+
+    try {
+      const session = JSON.parse(sessionStorage.getItem(SESSION_KEY) || "{}");
+      if (session.username) document.getElementById("studentName").value = session.username;
+    } catch {}
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = String(text ?? "");
+      return div.innerHTML;
+    }
+
+    function toDisplayTime(value) {
+      if (!value) return "未设置";
+      return String(value).replace("T", " ").slice(0, 19);
+    }
+
+    function setSubmitStatus(message, autoClear = false) {
+      if (submitStatusTimer) {
+        clearTimeout(submitStatusTimer);
+        submitStatusTimer = null;
+      }
+      submitStatus.textContent = message || "";
+      if (autoClear && message) {
+        submitStatusTimer = setTimeout(() => {
+          submitStatus.textContent = "";
+          submitStatusTimer = null;
+        }, 4000);
+      }
+    }
+
+    async function parseApiResponse(resp) {
+      const raw = await resp.text();
+      let data = null;
+      try {
+        data = raw ? JSON.parse(raw) : null;
+      } catch {
+        if (!resp.ok) throw new Error(raw || `HTTP ${resp.status}`);
+        throw new Error("服务器返回了无法识别的数据。");
+      }
+      if (!resp.ok) throw new Error((data && data.detail) || raw || `HTTP ${resp.status}`);
+      return data;
+    }
+
+    function renderList(title, items) {
+      const list = Array.isArray(items) ? items.filter(Boolean) : [];
+      if (!list.length) return "";
+      return `
+        <div style="margin-top:8px;">
+          <div class="muted">${escapeHtml(title)}</div>
+          <ul>${list.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+        </div>
+      `;
+    }
+
+    function renderFeedbackBox(title, feedback) {
+      if (!feedback) {
+        return `<div class="feedback-box"><strong>${escapeHtml(title)}</strong><div class="muted" style="margin-top:6px;">暂无建议</div></div>`;
+      }
+      const summary = feedback.summary || feedback.overall_summary || "";
+      const trend = feedback.progress_trend || "";
+      const strengths = feedback.strengths || [];
+      const problems = feedback.problems || feedback.recurring_issues || [];
+      const nextSteps = feedback.next_steps || [];
+      const study = feedback.study_suggestions || [];
+      const provider = [feedback.provider, feedback.model].filter(Boolean).join(" / ");
+      return `
+        <div class="feedback-box">
+          <strong>${escapeHtml(title)}</strong>
+          ${summary ? `<div style="margin-top:8px;">${escapeHtml(summary)}</div>` : ""}
+          ${trend ? `<div class="muted" style="margin-top:8px;">进步趋势：${escapeHtml(trend)}</div>` : ""}
+          ${renderList("做得好的地方", strengths)}
+          ${renderList("需要关注的问题", problems)}
+          ${renderList("下一步建议", nextSteps)}
+          ${renderList("推荐复习内容", study)}
+          ${provider ? `<div class="muted" style="margin-top:8px;">${escapeHtml(provider)}</div>` : ""}
+        </div>
+      `;
+    }
+
+    function renderResultBox(result) {
+      return `
+        <div><strong>状态：</strong>${escapeHtml(result.status || "-")} | <strong>分数：</strong>${escapeHtml(result.score ?? 0)}</div>
+        ${result.message ? `<div style="margin-top:6px;">${escapeHtml(result.message)}</div>` : ""}
+        <div class="muted" style="margin-top:8px;">输出</div>
+        <pre>${escapeHtml(result.output || "")}</pre>
+      `;
+    }
+
+    function attachCodeEditorBehavior(textarea) {
+      if (!textarea) return;
+      textarea.spellcheck = false;
+      textarea.style.fontFamily = 'Consolas, "Courier New", monospace';
+      textarea.style.tabSize = "4";
+
+      textarea.addEventListener("keydown", event => {
+        if (event.key !== "Tab") return;
+        event.preventDefault();
+
+        const indent = "    ";
+        const { selectionStart, selectionEnd, value } = textarea;
+        const hasSelection = selectionStart !== selectionEnd;
+        const selectedText = value.slice(selectionStart, selectionEnd);
+        const isMultiline = hasSelection && selectedText.includes("\n");
+
+        if (isMultiline) {
+          const lineStart = value.lastIndexOf("\n", selectionStart - 1) + 1;
+          const block = value.slice(lineStart, selectionEnd);
+          const indented = indent + block.replace(/\n/g, "\n" + indent);
+          textarea.value = value.slice(0, lineStart) + indented + value.slice(selectionEnd);
+          textarea.selectionStart = lineStart;
+          textarea.selectionEnd = lineStart + indented.length;
+          return;
+        }
+
+        textarea.value = value.slice(0, selectionStart) + indent + value.slice(selectionEnd);
+        textarea.selectionStart = textarea.selectionEnd = selectionStart + indent.length;
+      });
+    }
+
+    function renderProblems(problems) {
+      problemList.innerHTML = "";
+      if (!problems.length) {
+        problemList.innerHTML = `<div class="muted">当前作业还没有题目。</div>`;
+        return;
+      }
+      problems.forEach(problem => {
+        const item = document.createElement("div");
+        item.className = "problem";
+        item.innerHTML = `
+          <div><strong>${escapeHtml(problem.title)}</strong> <span class="muted">(${escapeHtml(problem.problem_type || "normal")} · ${escapeHtml(problem.points ?? 0)} 分)</span></div>
+          <div class="muted" style="margin-top:6px;">${escapeHtml(problem.description || "暂无题目说明")}</div>
+          <div class="muted">
+            时间限制 ${escapeHtml(problem.time_limit || 3)}s
+            ${problem.memory_limit ? ` | 内存 ${escapeHtml(problem.memory_limit)}MB` : ""}
+            ${problem.pids_limit ? ` | 进程数 ${escapeHtml(problem.pids_limit)}` : ""}
+            ${problem.file_size_limit ? ` | 文件上限 ${escapeHtml(problem.file_size_limit)}MB` : ""}
+          </div>
+          <div style="margin-top:10px;">
+            <label>代码</label>
+            <textarea class="p-code" data-problem-id="${problem.id}" placeholder="在这里输入本题代码"></textarea>
+          </div>
+          <div style="margin-top:10px;">
+            <label>上传代码文件</label>
+            <input type="file" class="p-file" data-problem-id="${problem.id}" accept=".c,.txt,.cpp" />
+          </div>
+          <div class="result" id="result-${problem.id}" style="display:none;"></div>
+        `;
+        problemList.appendChild(item);
+        attachCodeEditorBehavior(item.querySelector(".p-code"));
+        item.querySelector(".p-file").addEventListener("change", async event => {
+          const file = event.target.files[0];
+          if (!file) return;
+          item.querySelector(".p-code").value = await file.text();
+        });
+      });
+    }
+
+    async function loadAssignments() {
+      try {
+        const data = await parseApiResponse(await fetch("/api/assignments"));
+        assignmentSelect.innerHTML = "";
+        const list = data.assignments || [];
+        list.forEach(item => {
+          const option = document.createElement("option");
+          option.value = item.id;
+          option.textContent = `#${item.id} ${item.title} (${item.problem_count} 题)`;
+          assignmentSelect.appendChild(option);
+        });
+        if (!list.length) {
+          assignmentInfo.textContent = "暂无作业";
+          problemList.innerHTML = `<div class="muted">暂无可加载作业。</div>`;
+          return;
+        }
+        await loadAssignment();
+      } catch (err) {
+        assignmentInfo.textContent = `加载失败：${err.message}`;
+      }
+    }
+
+    async function loadAssignment() {
+      const id = assignmentSelect.value;
+      if (!id) return;
+      try {
+        const data = await parseApiResponse(await fetch(`/api/assignments/${id}`));
+        currentAssignment = data;
+        assignmentInfo.textContent = `说明：${data.description || "无"} | 截止：${toDisplayTime(data.deadline_at)}`;
+        renderProblems(data.problems || []);
+        submitStatus.textContent = "";
+        submitFeedback.innerHTML = "";
+        overallFeedback.innerHTML = "";
+        finalScoreInfo.textContent = "";
+        await loadHistory();
+        await loadVersions();
+      } catch (err) {
+        assignmentInfo.textContent = `加载失败：${err.message}`;
+      }
+    }
+
+    function collectSubmissionItems() {
+      const timeout = parseInt(document.getElementById("timeout").value, 10) || 3;
+      return Array.from(document.querySelectorAll(".p-code"))
+        .map(area => ({
+          problem_id: parseInt(area.dataset.problemId, 10),
+          code: area.value.trim(),
+          timeout
+        }))
+        .filter(item => item.code);
+    }
+
+    async function submitAssignment() {
+      const student = document.getElementById("studentName").value.trim();
+      const commitMessage = document.getElementById("commitMessage").value.trim();
+      if (!student) {
+        setSubmitStatus("请输入学生账号。");
+        return;
+      }
+      if (!currentAssignment) {
+        setSubmitStatus("请先选择作业。");
+        return;
+      }
+      const items = collectSubmissionItems();
+      if (!items.length) {
+        setSubmitStatus("请至少填写一道题目的代码。");
+        return;
+      }
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.style.opacity = "0.7";
+      }
+      setSubmitStatus("正在提交...");
+      try {
+        const data = await parseApiResponse(await fetch(`/api/assignments/${currentAssignment.id}/submit`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ student, commit_message: commitMessage, items })
+        }));
+        submitFeedback.innerHTML = renderFeedbackBox(`本次提交建议（v${data.version_no}）`, data.version_feedback || null);
+        overallFeedback.innerHTML = renderFeedbackBox("我的总体建议", data.student_feedback || null);
+        (data.items || []).forEach(result => {
+          const panel = document.getElementById(`result-${result.problem_id}`);
+          if (!panel) return;
+          panel.style.display = "block";
+          panel.innerHTML = renderResultBox(result);
+        });
+        await loadHistory();
+        await loadVersions();
+        setSubmitStatus(`提交成功，得分 ${data.total_score} 分，版本 v${data.version_no}，hash ${String(data.commit_hash || "").slice(0, 8)}`, true);
+      } catch (err) {
+        setSubmitStatus(`提交失败：${err.message}`);
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.style.opacity = "";
+        }
+      }
+    }
+
+    async function loadHistory() {
+      const student = document.getElementById("studentName").value.trim();
+      if (!currentAssignment || !student) {
+        historyList.textContent = "请输入学生账号并选择作业。";
+        return;
+      }
+      historyList.textContent = "加载中...";
+      try {
+        const data = await parseApiResponse(await fetch(`/api/assignments/${currentAssignment.id}/submissions?student=${encodeURIComponent(student)}`));
+        const list = data.submissions || [];
+        if (!list.length) {
+          historyList.textContent = "暂无提交记录";
+          return;
+        }
+        historyList.innerHTML = list.map(item => `
+          <div class="subcard">
+            <div><strong>提交 #${item.id}</strong> · 总分 ${escapeHtml(item.total_score ?? 0)}</div>
+            <div class="muted">时间：${escapeHtml(toDisplayTime(item.created_at))}</div>
+          </div>
+        `).join("");
+      } catch (err) {
+        historyList.textContent = `加载失败：${err.message}`;
+      }
+    }
+
+    async function loadVersions() {
+      const student = document.getElementById("studentName").value.trim();
+      if (!currentAssignment || !student) {
+        versionList.textContent = "请输入学生账号并选择作业。";
+        return;
+      }
+      versionList.textContent = "加载中...";
+      try {
+        const data = await parseApiResponse(await fetch(`/api/assignments/${currentAssignment.id}/versions?student=${encodeURIComponent(student)}`));
+        const versions = data.versions || [];
+        if (!versions.length) {
+          versionList.textContent = "暂无版本记录";
+          return;
+        }
+        versionList.innerHTML = versions.map(item => `
+          <div class="subcard">
+            <div><strong>v${item.version_no}</strong> · 分数 ${escapeHtml(item.total_score ?? 0)} · hash ${escapeHtml(String(item.commit_hash || "").slice(0, 8))}</div>
+            <div class="muted">${escapeHtml(item.status_summary || "暂无状态摘要")}</div>
+            <div class="muted">时间：${escapeHtml(toDisplayTime(item.created_at))}</div>
+            <div class="toolbar" style="margin-top:10px;">
+              <button class="btn secondary" type="button" onclick="showVersion(${item.id})">查看版本详情</button>
+              <button class="btn secondary" type="button" onclick="showVersionFeedback(${item.id})">查看 AI 建议</button>
+            </div>
+            <div class="result" id="version-${item.id}" style="display:none;"></div>
+            <div id="version-feedback-${item.id}" style="display:none;"></div>
+          </div>
+        `).join("");
+      } catch (err) {
+        versionList.textContent = `加载失败：${err.message}`;
+      }
+    }
+
+    async function showVersion(versionId) {
+      const panel = document.getElementById(`version-${versionId}`);
+      if (!panel) return;
+      if (panel.style.display === "block") {
+        panel.style.display = "none";
+        return;
+      }
+      panel.style.display = "block";
+      panel.textContent = "加载中...";
+      try {
+        const data = await parseApiResponse(await fetch(`/api/versions/${versionId}`));
+        panel.innerHTML = `
+          <div><strong>版本 v${data.version_no}</strong> · 总分 ${escapeHtml(data.total_score ?? 0)} · hash ${escapeHtml(String(data.commit_hash || "").slice(0, 8))}</div>
+          <div class="muted">提交说明：${escapeHtml(data.commit_message || "无")}</div>
+          <div class="muted">时间：${escapeHtml(toDisplayTime(data.created_at))}</div>
+          <div style="margin-top:10px;">
+            ${(data.items || []).map(item => `
+              <div style="padding:8px 0;border-bottom:1px dashed rgba(18,60,52,0.12);">
+                题目 ${escapeHtml(item.problem_id)} · 状态 ${escapeHtml(item.status || "-")} · 分数 ${escapeHtml(item.score ?? 0)}
+              </div>
+            `).join("")}
+          </div>
+          ${data.feedback ? renderFeedbackBox("本次提交建议", data.feedback) : ""}
+        `;
+      } catch (err) {
+        panel.textContent = `加载失败：${err.message}`;
+      }
+    }
+
+    async function showVersionFeedback(versionId) {
+      const panel = document.getElementById(`version-feedback-${versionId}`);
+      if (!panel) return;
+      if (panel.style.display === "block") {
+        panel.style.display = "none";
+        return;
+      }
+      panel.style.display = "block";
+      panel.innerHTML = `<div class="feedback-box">AI 建议生成中...</div>`;
+      try {
+        const data = await parseApiResponse(await fetch(`/api/versions/${versionId}/feedback/generate?refresh=true`, { method: "POST" }));
+        panel.innerHTML = renderFeedbackBox(`版本 ${versionId} 的 AI 建议`, data.feedback || null);
+      } catch (err) {
+        panel.innerHTML = `<div class="feedback-box">加载失败：${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    async function loadFinalScore() {
+      const student = document.getElementById("studentName").value.trim();
+      const policy = document.getElementById("finalPolicy").value;
+      if (!currentAssignment || !student) {
+        finalScoreInfo.textContent = "请先选择作业并填写学生账号。";
+        return;
+      }
+      finalScoreInfo.textContent = "查询中...";
+      try {
+        const data = await parseApiResponse(await fetch(`/api/assignments/${currentAssignment.id}/final-score?student=${encodeURIComponent(student)}&policy=${policy}`));
+        if (!data.final) {
+          finalScoreInfo.textContent = "暂无可用版本。";
+          return;
+        }
+        finalScoreInfo.textContent = `策略 ${policy}：v${data.final.version_no}，分数 ${data.final.total_score}，hash ${String(data.final.commit_hash || "").slice(0, 8)}`;
+      } catch (err) {
+        finalScoreInfo.textContent = `查询失败：${err.message}`;
+      }
+    }
+
+    async function loadOverallFeedback() {
+      const student = document.getElementById("studentName").value.trim();
+      if (!currentAssignment || !student) {
+        overallFeedback.innerHTML = `<div class="feedback-box">请先选择作业并填写学生账号。</div>`;
+        return;
+      }
+      overallFeedback.innerHTML = `<div class="feedback-box">总体建议生成中...</div>`;
+      try {
+        const data = await parseApiResponse(await fetch(`/api/assignments/${currentAssignment.id}/students/${encodeURIComponent(student)}/feedback/generate?refresh=true`, {
+          method: "POST"
+        }));
+        overallFeedback.innerHTML = renderFeedbackBox("我的总体建议", data.feedback || null);
+      } catch (err) {
+        overallFeedback.innerHTML = `<div class="feedback-box">加载失败：${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    function logout() {
+      sessionStorage.removeItem(SESSION_KEY);
+      window.location.href = "login.html";
+    }
+
+    loadAssignments();
+  </script>
+</body>
+</html>
+
+

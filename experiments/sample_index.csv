@@ -1,0 +1,4 @@
+sample_id,category,assignment_type,source_file,expected_status,notes
+S001,normal,process,backend/templates/process.txt,AC,baseline process sample
+S002,normal,file,backend/templates/normal.txt,AC,baseline file sample
+S003,normal,memory,backend/templates/memory.txt,AC,baseline memory sample

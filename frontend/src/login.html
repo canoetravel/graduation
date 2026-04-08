@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>登录 / 注册</title>
+  <style>
+    :root {
+      --bg: #f3efe7;
+      --surface: rgba(255, 255, 255, 0.88);
+      --surface-strong: #ffffff;
+      --ink: #172126;
+      --muted: #66727d;
+      --primary: #123c34;
+      --primary-strong: #0b2b25;
+      --accent: #c96f3b;
+      --accent-strong: #8d4620;
+      --hero-ink: #fff5ea;
+      --hero-soft: rgba(255, 245, 234, 0.9);
+      --hero-muted: rgba(255, 245, 234, 0.8);
+      --line: rgba(18, 60, 52, 0.14);
+      --shadow: 0 28px 80px rgba(25, 33, 38, 0.18);
+      --radius-xl: 32px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 32px;
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(223, 189, 156, 0.38), transparent 34%),
+        radial-gradient(circle at 85% 12%, rgba(68, 124, 104, 0.22), transparent 26%),
+        linear-gradient(135deg, #f6f1e8 0%, #ece7de 45%, #e4dfd5 100%);
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      filter: blur(10px);
+      pointer-events: none;
+      opacity: 0.55;
+    }
+
+    body::before {
+      top: -90px;
+      right: -60px;
+      background: rgba(201, 111, 59, 0.16);
+    }
+
+    body::after {
+      left: -90px;
+      bottom: -120px;
+      background: rgba(18, 60, 52, 0.12);
+    }
+
+    .shell {
+      width: 100%;
+      max-width: none;
+      margin: 0 auto;
+      min-height: calc(100vh - 64px);
+      display: block;
+    }
+
+    .showcase {
+      display: none;
+    }
+
+    .showcase-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--primary-strong);
+      font-size: 14px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .showcase-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent) 0%, #e29f70 100%);
+      color: #fff;
+      box-shadow: 0 16px 28px rgba(201, 111, 59, 0.28);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .hero h1 {
+      margin: 0;
+      max-width: 640px;
+      font-size: clamp(42px, 5vw, 72px);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      color: var(--primary-strong);
+    }
+
+    .hero p {
+      margin: 18px 0 0;
+      max-width: 560px;
+      font-size: 18px;
+      line-height: 1.75;
+      color: rgba(23, 33, 38, 0.84);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      max-width: 720px;
+    }
+
+    .stat-card {
+      padding: 18px 20px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.52);
+      box-shadow: 0 12px 30px rgba(26, 34, 38, 0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-label {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      display: block;
+      color: var(--primary-strong);
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+
+    .feature-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      max-width: 760px;
+    }
+
+    .feature-tile {
+      padding: 18px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.64));
+      border: 1px solid rgba(18, 60, 52, 0.08);
+      box-shadow: 0 12px 28px rgba(26, 34, 38, 0.08);
+    }
+
+    .feature-tile strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--primary);
+      font-size: 15px;
+    }
+
+    .feature-tile span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 780px;
+      margin: 0 auto;
+      min-height: calc(100vh - 64px);
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.52);
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+      position: relative;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: -110px;
+      right: -90px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201, 111, 59, 0.24) 0%, rgba(201, 111, 59, 0) 72%);
+      pointer-events: none;
+    }
+
+    .card-inner {
+      padding: 28px;
+      min-height: calc(100vh - 64px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 22px;
+    }
+
+    .brand {
+      padding: 24px;
+      border-radius: 24px;
+      background: linear-gradient(155deg, var(--primary) 0%, #184f44 52%, #0c2d27 100%);
+      color: var(--hero-ink);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brand::after {
+      content: "";
+      position: absolute;
+      inset: auto -40px -70px auto;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .brand-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 30px;
+      letter-spacing: -0.03em;
+      color: var(--hero-ink);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+    }
+
+    .brand p {
+      margin: 0;
+      color: var(--hero-soft);
+      line-height: 1.7;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--hero-ink);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+    }
+
+    .note {
+      font-size: 12px;
+      color: var(--hero-muted);
+    }
+
+    .brand-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .brand-card {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .brand-card strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .brand-card span {
+      color: var(--hero-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .form-area {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent-strong);
+      font-weight: 700;
+    }
+
+    .form-head h2 {
+      margin: 8px 0 6px;
+      color: var(--primary-strong);
+      font-size: 28px;
+      letter-spacing: -0.03em;
+    }
+
+    .form-head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      padding: 6px;
+      border-radius: 999px;
+      background: rgba(18, 60, 52, 0.06);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px 14px;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.22s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--surface-strong);
+      color: var(--primary);
+      box-shadow: 0 10px 24px rgba(18, 60, 52, 0.12);
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(18, 60, 52, 0.06);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid rgba(18, 60, 52, 0.08);
+    }
+
+    .message {
+      display: none;
+      padding: 14px 16px;
+      border-radius: 16px;
+      font-size: 13px;
+      line-height: 1.6;
+      background: rgba(201, 111, 59, 0.1);
+      color: #a24f20;
+      border: 1px solid rgba(201, 111, 59, 0.2);
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .form-shell {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.66);
+      border: 1px solid rgba(18, 60, 52, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+
+    .form {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .form.active {
+      display: flex;
+    }
+
+    .form-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field-hint,
+    .form-footnote {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    input, select {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--ink);
+      font-size: 15px;
+      font-family: inherit;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    input::placeholder {
+      color: #9aa4ac;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: rgba(201, 111, 59, 0.72);
+      box-shadow: 0 0 0 4px rgba(201, 111, 59, 0.14);
+      transform: translateY(-1px);
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      flex: 1;
+      min-height: 48px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: none;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--accent) 0%, #de8d58 100%);
+      color: #fff;
+      box-shadow: 0 16px 28px rgba(201, 111, 59, 0.26);
+    }
+
+    .btn.secondary {
+      background: rgba(18, 60, 52, 0.06);
+      color: var(--primary);
+      border: 1px solid rgba(18, 60, 52, 0.08);
+    }
+
+    .showcase-top,
+    .hero,
+    .stats,
+    .feature-strip,
+    .brand-grid,
+    .pill-row,
+    .note,
+    .brand p {
+      display: none;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1024px) {
+      .card {
+        min-height: auto;
+      }
+
+      .card-inner {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 18px;
+      }
+
+      .stats,
+      .feature-strip,
+      .brand-grid,
+      .field-row {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .card-inner {
+        padding: 18px;
+      }
+
+      .brand {
+        padding: 22px;
+      }
+
+      .hero h1 {
+        font-size: 42px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="showcase">
+      <div class="showcase-top">
+        <span class="showcase-mark">OJ</span>
+        <span>操作系统评测平台</span>
+      </div>
+
+      <div class="hero">
+        <h1>让作业评测平台看起来像一款正式产品。</h1>
+        <p>统一登录入口、作业发布后台、学生提交工作台与 AI 学习反馈，让你的毕业设计在打开页面的第一眼，就更接近商业化网页的质感。</p>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card">
+          <span class="stat-label">版本追踪</span>
+          <span class="stat-value">类 Git 管理</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">AI 辅助</span>
+          <span class="stat-value">本地模型接入</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">题型约束</span>
+          <span class="stat-value">四类题型</span>
+        </div>
+      </div>
+
+      <div class="feature-strip">
+        <div class="feature-tile">
+          <strong>教师控制台</strong>
+          <span>发布作业、配置题型限制、执行查重与 AI 复核，并查看版本轨迹。</span>
+        </div>
+        <div class="feature-tile">
+          <strong>学生工作台</strong>
+          <span>提交代码、查看历史版本、接收即时建议和整体学习反馈。</span>
+        </div>
+        <div class="feature-tile">
+          <strong>可信评测流程</strong>
+          <span>资源限制、安全校验、结构化评测与可解释输出在一个流程中完成。</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="card">
+      <div class="card-inner">
+        <section class="brand">
+          <div class="brand-top">
+            <span class="badge">统一登录入口</span>
+            <span class="note">本地演示会话</span>
+          </div>
+          <h1>登录与注册</h1>
+          <p>输入账号密码即可进入老师端或学生端。系统会根据已注册身份自动跳转，也允许你在登录时手动校验角色。</p>
+          <div class="brand-grid">
+            <div class="brand-card">
+              <strong>统一入口</strong>
+              <span>一个入口连接教师工作台与学生工作区。</span>
+            </div>
+            <div class="brand-card">
+              <strong>轻量演示</strong>
+              <span>账号信息保存在浏览器本地，方便演示与答辩。</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-area">
+          <div class="form-head">
+            <div class="eyebrow">欢迎使用</div>
+            <h2>进入你的工作台</h2>
+            <p>切换登录或注册后，系统会立即更新入口表单，登录成功后将根据身份进入对应页面。</p>
+          </div>
+
+          <div class="tabs">
+            <button class="tab-btn active" type="button" data-tab="login">登录</button>
+            <button class="tab-btn" type="button" data-tab="register">注册</button>
+          </div>
+
+          <div class="pill-row">
+            <span class="pill">教师端</span>
+            <span class="pill">学生端</span>
+            <span class="pill">会话保持</span>
+          </div>
+
+          <div id="message" class="message"></div>
+
+          <div class="form-shell">
+            <form id="loginForm" class="form active" autocomplete="off">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="loginUsername">账号</label>
+                  <input id="loginUsername" type="text" placeholder="请输入账号" required />
+                </div>
+                <div class="field">
+                  <label for="loginPassword">密码</label>
+                  <input id="loginPassword" type="password" placeholder="请输入密码" required />
+                </div>
+                <div class="field">
+                  <label for="loginRole">身份</label>
+                  <select id="loginRole">
+                    <option value="auto" selected>自动识别身份</option>
+                    <option value="student">学生</option>
+                    <option value="teacher">老师</option>
+                  </select>
+                  <div class="field-hint">默认按注册角色自动识别，也可以手动指定校验。</div>
+                </div>
+              </div>
+              <div class="actions">
+                <button class="btn primary" type="submit">登录</button>
+                <button class="btn secondary" type="button" id="fillDemo">填充示例</button>
+              </div>
+              <div class="form-footnote">示例账号仅用于演示页面流程，实际注册与登录信息会写入数据库。</div>
+            </form>
+
+            <form id="registerForm" class="form" autocomplete="off">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="regUsername">账号</label>
+                  <input id="regUsername" type="text" placeholder="创建账号" required />
+                </div>
+                <div class="field-row">
+                  <div class="field">
+                    <label for="regPassword">密码</label>
+                    <input id="regPassword" type="password" placeholder="设置密码" required />
+                  </div>
+                  <div class="field">
+                    <label for="regRole">身份</label>
+                    <select id="regRole" required>
+                      <option value="">请选择身份</option>
+                      <option value="student">学生</option>
+                      <option value="teacher">老师</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="actions">
+                <button class="btn primary" type="submit">注册</button>
+                <button class="btn secondary" type="button" id="goLogin">返回登录</button>
+              </div>
+              <div class="form-footnote">注册成功后会自动回到登录页，你可以直接使用新账号登录。</div>
+            </form>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SESSION_KEY = "os_judge_session_v1";
+
+    const tabs = document.querySelectorAll(".tab-btn");
+    const forms = {
+      login: document.getElementById("loginForm"),
+      register: document.getElementById("registerForm")
+    };
+    const messageBox = document.getElementById("message");
+
+    function showMessage(text) {
+      messageBox.textContent = text;
+      messageBox.classList.add("show");
+    }
+
+    function clearMessage() {
+      messageBox.textContent = "";
+      messageBox.classList.remove("show");
+    }
+
+    function switchTab(tab) {
+      tabs.forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tab));
+      Object.keys(forms).forEach(key => forms[key].classList.toggle("active", key === tab));
+      clearMessage();
+    }
+
+    function saveSession(session) {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    }
+
+    function restoreSession() {
+      try {
+        return JSON.parse(sessionStorage.getItem(SESSION_KEY));
+      } catch {
+        return null;
+      }
+    }
+
+    function redirectByRole(role) {
+      if (role === "teacher") {
+        window.location.href = "teacher.html";
+      } else {
+        window.location.href = "student.html";
+      }
+    }
+
+    //把后端相应读成文本，然后解析成json
+    async function parseApiResponse(resp) {
+      const raw = await resp.text();
+      let data = null;
+      try {
+        data = raw ? JSON.parse(raw) : null;
+      } catch {
+        if (!resp.ok) throw new Error(raw || `HTTP ${resp.status}`);
+        throw new Error("服务器返回了无法识别的数据。");
+      }
+      if (!resp.ok) throw new Error((data && data.detail) || raw || `HTTP ${resp.status}`);
+      return data;
+    }
+
+    tabs.forEach(btn => {
+      btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+    });
+
+    document.getElementById("fillDemo").addEventListener("click", () => {
+      document.getElementById("loginUsername").value = "demo";
+      document.getElementById("loginPassword").value = "123456";
+      document.getElementById("loginRole").value = "auto";
+      clearMessage();
+    });
+
+    document.getElementById("goLogin").addEventListener("click", () => {
+      switchTab("login");
+    });
+
+    
+    forms.register.addEventListener("submit", async event => {
+      event.preventDefault();
+      clearMessage();
+
+      const username = document.getElementById("regUsername").value.trim();
+      const password = document.getElementById("regPassword").value.trim();
+      const role = document.getElementById("regRole").value;
+
+      if (!username || !password || !role) {//没有则提示信息不完整
+        showMessage("请填写完整注册信息。");
+        return;
+      }
+
+      //发送请求
+      try {
+        await parseApiResponse(await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password, role })
+        }));
+        switchTab("login");
+        document.getElementById("loginUsername").value = username;
+        document.getElementById("loginRole").value = "auto";
+        showMessage("注册成功，请登录。");
+      } catch (err) {
+        showMessage(`注册失败：${err.message}`);
+      }
+    });
+
+    forms.login.addEventListener("submit", async event => {
+      event.preventDefault();
+      clearMessage();
+
+      const username = document.getElementById("loginUsername").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+      const roleSelected = document.getElementById("loginRole").value;
+
+      if (!username || !password) {
+        showMessage("请填写账号和密码。");
+        return;
+      }
+
+      try {
+        const data = await parseApiResponse(await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password, role: roleSelected })
+        }));
+        const user = data.user || {};
+        saveSession({ username: user.username, role: user.role, loginAt: Date.now() });
+        redirectByRole(user.role);
+      } catch (err) {
+        showMessage(`登录失败：${err.message}`);
+      }
+    });
+
+    const existingSession = restoreSession();
+    if (existingSession && existingSession.role) {
+      redirectByRole(existingSession.role);
+    }
+  </script>
+</body>
+</html>

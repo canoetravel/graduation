@@ -1,0 +1,11 @@
+{
+    "folders": [
+        {
+            "name": "graduation",
+            "path": "."
+        }
+    ],
+    "settings": {
+        "workbench.tree.indent": 18
+    }
+}

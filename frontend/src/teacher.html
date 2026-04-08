@@ -1,0 +1,1274 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>教师端 - 教学控制台</title>
+  <style>
+    :root {
+      --bg: #f2eee7;
+      --surface: rgba(255, 255, 255, 0.88);
+      --surface-strong: #ffffff;
+      --ink: #1a2429;
+      --muted: #66727d;
+      --primary: #123c34;
+      --primary-strong: #0b2b25;
+      --accent: #c96f3b;
+      --hero-ink: #fff6ee;
+      --hero-soft: rgba(255, 246, 238, 0.92);
+      --hero-muted: rgba(255, 246, 238, 0.82);
+      --line: rgba(18, 60, 52, 0.12);
+      --soft: #f7f3ed;
+      --soft-border: rgba(18, 60, 52, 0.08);
+      --shadow: 0 22px 60px rgba(24, 33, 38, 0.12);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 28px;
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(201, 111, 59, 0.12), transparent 30%),
+        radial-gradient(circle at 86% 8%, rgba(18, 60, 52, 0.14), transparent 24%),
+        linear-gradient(180deg, #f8f3eb 0%, #efebe2 100%);
+    }
+
+    .container { max-width: 1320px; margin: 0 auto; }
+    .page-shell { display: flex; flex-direction: column; gap: 22px; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px 32px;
+      border-radius: 34px;
+      background: linear-gradient(145deg, #123c34 0%, #1c5648 52%, #0b2722 100%);
+      box-shadow: 0 32px 70px rgba(18, 60, 52, 0.22);
+      color: #f7f3ed;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      top: -100px;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 72%);
+    }
+
+    .hero-top {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--hero-muted);
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 28px;
+      height: 1px;
+      background: rgba(247, 243, 237, 0.5);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 56px);
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+      color: var(--hero-ink);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+    }
+
+    .hero p {
+      margin: 16px 0 0;
+      max-width: 700px;
+      line-height: 1.75;
+      color: var(--hero-soft);
+      font-size: 15px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.14);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+      min-width: 220px;
+    }
+
+    .hero-kicker {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--hero-ink);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat {
+      padding: 18px 20px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+    }
+
+    .stat span { display: block; }
+    .stat-label {
+      font-size: 12px;
+      color: var(--hero-muted);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.14);
+    }
+
+    .stat-value {
+      font-size: 23px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--hero-ink);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .stack { display: flex; flex-direction: column; gap: 22px; }
+    .stack[data-feature-panel] { grid-column: 1 / -1; }
+    .stack[data-feature-panel][hidden] { display: none !important; }
+    .feature-switcher {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .feature-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      padding: 18px 20px;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(18, 60, 52, 0.1);
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--primary-strong);
+      cursor: pointer;
+      box-shadow: 0 10px 26px rgba(24, 33, 38, 0.08);
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      text-align: left;
+      font: inherit;
+    }
+
+    .feature-btn strong {
+      font-size: 16px;
+      color: var(--primary-strong);
+    }
+
+    .feature-btn span {
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .feature-btn.active {
+      border-color: rgba(201, 111, 59, 0.42);
+      background: rgba(255, 248, 242, 0.92);
+      box-shadow: 0 16px 30px rgba(201, 111, 59, 0.12);
+      transform: translateY(-1px);
+    }
+
+    h1, h2, h3 { margin: 0; color: var(--primary-strong); }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.52);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .section-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .subcard {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.62);
+      border: 1px solid var(--line);
+    }
+
+    .row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-family: inherit;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--ink);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: rgba(201, 111, 59, 0.68);
+      box-shadow: 0 0 0 4px rgba(201, 111, 59, 0.12);
+      transform: translateY(-1px);
+    }
+
+    textarea { min-height: 100px; resize: vertical; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent) 0%, #de8d58 100%);
+      color: #fff;
+      box-shadow: 0 14px 24px rgba(201, 111, 59, 0.18);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn.secondary {
+      background: rgba(18, 60, 52, 0.06);
+      color: var(--primary);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .hero-actions .btn.secondary {
+      background: rgba(255, 246, 238, 0.16);
+      color: var(--hero-ink);
+      border: 1px solid rgba(255, 246, 238, 0.36);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-actions .btn.secondary:hover {
+      background: rgba(255, 246, 238, 0.24);
+    }
+
+    .btn.small {
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .muted { color: var(--muted); font-size: 12px; line-height: 1.6; }
+
+    .problem {
+      border: 1px solid rgba(18, 60, 52, 0.1);
+      border-radius: 24px;
+      padding: 18px;
+      margin-bottom: 14px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 244, 237, 0.9));
+    }
+
+    .field-group[hidden] { display: none !important; }
+
+    .type-hint, .test-case, .result-box {
+      background: var(--soft);
+      border: 1px solid var(--soft-border);
+      border-radius: 18px;
+    }
+
+    .type-hint {
+      margin-top: 10px;
+      padding: 12px 14px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .test-case {
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    .result-box {
+      padding: 16px;
+      margin-top: 12px;
+    }
+
+    .code {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      background: rgba(18, 60, 52, 0.05);
+      border: 1px solid rgba(18, 60, 52, 0.08);
+      font-family: Consolas, "Courier New", monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 12px;
+    }
+
+    .risk-high { color: #b91c1c; }
+    .risk-medium { color: #b45309; }
+    .risk-low { color: #1d4ed8; }
+
+    .feedback-box {
+      margin-top: 10px;
+      padding: 14px 16px;
+      background: var(--soft);
+      border: 1px solid var(--soft-border);
+      border-radius: 18px;
+    }
+
+    .feedback-box h4 {
+      margin: 0 0 8px;
+      color: var(--primary);
+    }
+
+    .feedback-box ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+
+    .feedback-box li { margin-bottom: 4px; }
+
+    .hero p,
+    .hero-kicker,
+    .stats,
+    .section-head p {
+      display: none;
+    }
+
+    @media (max-width: 1100px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 16px; }
+      .hero-top, .hero-actions, .section-head {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .row, .stats, .feature-switcher { grid-template-columns: 1fr; }
+      .card { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="page-shell">
+      <section class="hero">
+        <div class="hero-top">
+          <div>
+            <div class="eyebrow">教师控制台</div>
+            <h1>教师端教学控制台</h1>
+            <p>把作业发布、题目配置、抄袭检测、AI 复核与学生版本轨迹集中到同一套后台界面里，让整个平台更像一款正式的教学管理产品。</p>
+          </div>
+          <div class="hero-actions">
+            <span class="hero-kicker">课程管理</span>
+            <button class="btn secondary" type="button" onclick="logout()">退出登录</button>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-label">作业配置</span>
+            <span class="stat-value">结构化发布</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">题型模板</span>
+            <span class="stat-value">四类模型</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">查重复核</span>
+            <span class="stat-value">AI 辅助</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">学生跟踪</span>
+            <span class="stat-value">基于版本</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="feature-switcher" aria-label="教师功能选择">
+        <button class="feature-btn active" type="button" data-feature-target="assignment" onclick="setTeacherFeature('assignment', this)">
+          <strong>作业发布</strong>
+          <span>创建作业、配置题目并查看已发布列表</span>
+        </button>
+        <button class="feature-btn" type="button" data-feature-target="plagiarism" onclick="setTeacherFeature('plagiarism', this)">
+          <strong>抄袭检测</strong>
+          <span>运行查重、AI 复核并导出检测结果</span>
+        </button>
+        <button class="feature-btn" type="button" data-feature-target="versions" onclick="setTeacherFeature('versions', this)">
+          <strong>学生轨迹</strong>
+          <span>查看版本历史、总体建议和最终成绩</span>
+        </button>
+      </section>
+
+      <div class="layout">
+        <div class="stack" data-feature-panel="assignment">
+          <section class="card">
+            <div class="section-head">
+              <div>
+                <h3>作业基础信息</h3>
+                <p>填写老师账号、作业标题、截止时间和作业说明，作为整份作业的元信息。</p>
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label>教师账号</label>
+                <input id="teacherName" placeholder="请输入教师账号" />
+              </div>
+              <div>
+                <label>作业名称</label>
+                <input id="assignmentTitle" placeholder="例如：OS 第 1 次作业" />
+              </div>
+            </div>
+            <div class="row" style="margin-top:14px;">
+              <div>
+                <label>截止时间（可选）</label>
+                <input id="deadlineAt" type="datetime-local" />
+              </div>
+              <div>
+                <label>作业说明</label>
+                <input id="assignmentDesc" placeholder="作业整体说明" />
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="section-head">
+              <div>
+                <h3>题目列表</h3>
+                <p>按题型模板配置限制条件，只显示当前题型真正相关的设置项。</p>
+              </div>
+              <div class="actions">
+                <button class="btn secondary" type="button" onclick="addProblem()">添加题目</button>
+              </div>
+            </div>
+            <div id="problemList"></div>
+          </section>
+
+          <section class="card">
+            <div class="section-head">
+              <div>
+                <h3>发布与已发布作业</h3>
+                <p>发布新作业后，下方会同步显示已有作业列表，便于快速继续管理。</p>
+              </div>
+            </div>
+            <div class="actions" style="margin-bottom:16px;">
+              <button class="btn" type="button" onclick="publishAssignment()">发布作业</button>
+              <span class="muted" id="publishStatus"></span>
+            </div>
+            <div class="subcard">
+              <div class="muted" style="margin-bottom:8px;">已发布作业</div>
+              <div id="assignmentList" class="muted">加载中...</div>
+            </div>
+          </section>
+        </div>
+
+        <div class="stack" data-feature-panel="plagiarism" hidden>
+          <section class="card">
+            <div class="section-head">
+              <div>
+                <h3>抄袭检测与 AI 复核</h3>
+                <p>先做基础检测，再使用 AI 输出风险解释与教师建议。</p>
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label>选择作业</label>
+                <select id="plagAssignment"></select>
+              </div>
+              <div>
+                <label>相似度阈值</label>
+                <input id="plagThreshold" type="number" value="0.7" min="0" max="1" step="0.05" />
+              </div>
+            </div>
+            <div class="actions" style="margin-top:14px;">
+              <button class="btn secondary" type="button" onclick="runPlagiarism()">基础检测</button>
+              <button class="btn secondary" type="button" onclick="runAiReview()">AI 复核</button>
+              <button class="btn secondary" type="button" onclick="exportPlagiarism('csv')">导出基础 CSV</button>
+              <button class="btn secondary" type="button" onclick="exportPlagiarism('txt')">导出基础 TXT</button>
+              <button class="btn secondary" type="button" onclick="exportAiReview()">导出 AI CSV</button>
+            </div>
+            <div class="muted" id="plagStatus" style="margin-top:10px;"></div>
+            <div id="plagResults" style="margin-top:12px;"></div>
+          </section>
+
+        </div>
+
+        <div class="stack" data-feature-panel="versions" hidden>
+          <section class="card">
+            <div class="section-head">
+              <div>
+                <h3>学生版本轨迹</h3>
+                <p>查看某个学生的版本列表、总体建议与最终成绩策略结果。</p>
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label>作业</label>
+                <select id="versionAssignment"></select>
+              </div>
+              <div>
+                <label>学生</label>
+                <select id="versionStudent"></select>
+              </div>
+            </div>
+            <div class="actions" style="margin-top:14px;">
+              <button class="btn secondary" type="button" onclick="loadVersionStudents()">加载学生</button>
+              <button class="btn secondary" type="button" onclick="loadStudentVersions()">查看版本</button>
+              <button class="btn secondary" type="button" onclick="loadStudentOverallFeedback()">总体建议</button>
+              <button class="btn secondary" type="button" onclick="exportStudentVersions()">导出版本 CSV</button>
+              <button class="btn secondary" type="button" onclick="loadStudentFinalScore('last')">最终分 last</button>
+              <button class="btn secondary" type="button" onclick="loadStudentFinalScore('best')">最终分 best</button>
+            </div>
+            <div class="muted" id="versionStatus" style="margin-top:10px;"></div>
+            <div id="studentOverallFeedback" style="margin-top:12px;"></div>
+            <div id="versionResults" style="margin-top:12px;"></div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+<script>
+    const problemList = document.getElementById("problemList");
+    const publishStatus = document.getElementById("publishStatus");
+    const assignmentList = document.getElementById("assignmentList");
+    const plagAssignment = document.getElementById("plagAssignment");
+    const plagStatus = document.getElementById("plagStatus");
+    const plagResults = document.getElementById("plagResults");
+    const versionAssignment = document.getElementById("versionAssignment");
+    const versionStudent = document.getElementById("versionStudent");
+    const versionStatus = document.getElementById("versionStatus");
+    const versionResults = document.getElementById("versionResults");
+    const studentOverallFeedback = document.getElementById("studentOverallFeedback");
+    const featurePanels = Array.from(document.querySelectorAll("[data-feature-panel]"));
+    const featureButtons = Array.from(document.querySelectorAll("[data-feature-target]"));
+    const SESSION_KEY = "os_judge_session_v1";
+    let lastPlagiarismPairs = [];
+
+    const problemTypeConfigs = {
+      normal: {
+        label: "普通 C 语言",
+        hint: "适合基础语法、函数、数组等常规编程题，仅显示时间和内存等核心限制。",
+        defaults: { time: 3, memory: 256, pids: "", file: "" },
+        fields: { memory: true, pids: false, file: false, allow: false, deny: true, tests: true }
+      },
+      file: {
+        label: "文件系统",
+        hint: "适合文件读写和文本处理题，重点控制时间和文件大小，可选内存限制。",
+        defaults: { time: 4, memory: 128, pids: "", file: 8 },
+        fields: { memory: true, pids: false, file: true, allow: false, deny: true, tests: true }
+      },
+      process: {
+        label: "进程管理",
+        hint: "适合 fork、wait、进程协作类题目，重点控制时间和进程数，可设置系统调用规则。",
+        defaults: { time: 4, memory: 256, pids: 20, file: 4 },
+        fields: { memory: true, pids: true, file: true, allow: true, deny: true, tests: false }
+      },
+      memory: {
+        label: "内存管理",
+        hint: "适合 malloc、free、指针安全类题目，重点控制时间和内存占用。",
+        defaults: { time: 3, memory: 128, pids: "", file: 4 },
+        fields: { memory: true, pids: false, file: true, allow: false, deny: true, tests: false }
+      }
+    };
+
+    try {
+      const session = JSON.parse(sessionStorage.getItem(SESSION_KEY) || "{}");
+      if (session.username) document.getElementById("teacherName").value = session.username;
+    } catch {}
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function toDisplayTime(value) {
+      if (!value) return "未设置";
+      return String(value).replace("T", " ").slice(0, 19);
+    }
+
+    function riskClass(level) {
+      if (level === "high") return "risk-high";
+      if (level === "medium") return "risk-medium";
+      return "risk-low";
+    }
+
+    function setTeacherFeature(feature, trigger = null) {
+      featurePanels.forEach(panel => {
+        panel.hidden = panel.dataset.featurePanel !== feature;
+      });
+      featureButtons.forEach(button => {
+        button.classList.toggle("active", button === trigger || button.dataset.featureTarget === feature);
+      });
+    }
+
+    async function parseApiResponse(resp) {
+      const raw = await resp.text();
+      let data = null;
+      try {
+        data = raw ? JSON.parse(raw) : null;
+      } catch {
+        if (!resp.ok) throw new Error(raw || `HTTP ${resp.status}`);
+        throw new Error("服务器返回了无法识别的数据。");
+      }
+      if (!resp.ok) throw new Error((data && data.detail) || raw || `HTTP ${resp.status}`);
+      return data;
+    }
+
+    function renderList(title, items) {
+      const list = Array.isArray(items) ? items.filter(Boolean) : [];
+      if (!list.length) return "";
+      return `
+        <div style="margin-top:8px;">
+          <strong>${escapeHtml(title)}</strong>
+          <ul>${list.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+        </div>
+      `;
+    }
+
+    function renderFeedbackBox(title, feedback) {
+      if (!feedback) {
+        return `<div class="feedback-box"><h4>${escapeHtml(title)}</h4><div class="muted">暂无建议，可点击按钮生成。</div></div>`;
+      }
+      const summary = feedback.summary || feedback.overall_summary || "";
+      const trend = feedback.progress_trend || "";
+      const strengths = feedback.strengths || [];
+      const problems = feedback.problems || feedback.recurring_issues || [];
+      const nextSteps = feedback.next_steps || [];
+      const studySuggestions = feedback.study_suggestions || [];
+      const teacherView = feedback.teacher_view || "";
+      const meta = [feedback.provider, feedback.model].filter(Boolean).join(" / ");
+      return `
+        <div class="feedback-box">
+          <h4>${escapeHtml(title)}</h4>
+          ${summary ? `<div>${escapeHtml(summary)}</div>` : ""}
+          ${trend ? `<div class="muted" style="margin-top:6px;">进步趋势：${escapeHtml(trend)}</div>` : ""}
+          ${renderList("做得好的地方", strengths)}
+          ${renderList("需要关注的问题", problems)}
+          ${renderList("下一步建议", nextSteps)}
+          ${renderList("推荐复习内容", studySuggestions)}
+          ${teacherView ? `<div class="muted" style="margin-top:8px;">教师视角：${escapeHtml(teacherView)}</div>` : ""}
+          ${meta ? `<div class="muted" style="margin-top:8px;">${escapeHtml(meta)}</div>` : ""}
+        </div>
+      `;
+    }
+
+    function createTestCaseTemplate() {
+      return `
+        <div class="test-case">
+          <div class="row">
+            <div>
+              <label>测试方式</label>
+              <select class="tc-type">
+                <option value="contains">包含匹配</option>
+                <option value="exact">完全匹配</option>
+              </select>
+            </div>
+            <div>
+              <label>分值</label>
+              <input class="tc-score" type="number" value="20" min="0" />
+            </div>
+          </div>
+          <div style="margin-top:10px;">
+            <label>期望输出</label>
+            <textarea class="tc-value" placeholder="例如：result = 120"></textarea>
+          </div>
+          <div class="actions" style="margin-top:10px;">
+            <button class="btn secondary small" type="button" onclick="removeTestCase(this)">删除测试点</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function createProblemTemplate() {
+      return `
+        <div class="problem">
+          <div class="row">
+            <div>
+              <label>题目名称</label>
+              <input class="p-title" placeholder="题目名称" />
+            </div>
+            <div>
+              <label>题目类型</label>
+              <select class="p-type">
+                <option value="normal">普通 C 语言</option>
+                <option value="file">文件系统</option>
+                <option value="process">进程管理</option>
+                <option value="memory">内存管理</option>
+              </select>
+            </div>
+          </div>
+          <div class="type-hint"></div>
+          <div style="margin-top:10px;">
+            <label>题目描述</label>
+            <textarea class="p-desc" placeholder="题目说明和要求"></textarea>
+          </div>
+          <div class="row" style="margin-top:10px;">
+            <div>
+              <label>题目分值</label>
+              <input class="p-points" type="number" value="100" min="0" />
+            </div>
+            <div>
+              <label>超时限制（秒）</label>
+              <input class="p-time" type="number" value="3" min="1" max="30" />
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px;">
+            <div class="field-group" data-field="memory">
+              <label>内存限制（MB）</label>
+              <input class="p-mem" type="number" value="256" min="32" max="2048" />
+            </div>
+            <div class="field-group" data-field="pids">
+              <label>进程数上限</label>
+              <input class="p-pids" type="number" value="20" min="1" max="256" />
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px;">
+            <div class="field-group" data-field="file">
+              <label>文件大小上限（MB）</label>
+              <input class="p-file-limit" type="number" value="8" min="1" max="512" />
+            </div>
+            <div class="field-group" data-field="allow">
+              <label>系统调用白名单（逗号分隔）</label>
+              <input class="p-allow" placeholder="例如：fork,waitpid" />
+            </div>
+          </div>
+          <div class="field-group" data-field="deny" style="margin-top:10px;">
+            <label>系统调用黑名单（逗号分隔）</label>
+            <input class="p-deny" placeholder="例如：system,popen,socket" value="system,popen,socket,remove,unlink" />
+          </div>
+          <div class="field-group" data-field="tests" style="margin-top:10px;">
+            <div class="actions" style="justify-content:space-between;">
+              <label style="margin-bottom:0;">测试点</label>
+              <button class="btn secondary small" type="button" onclick="addTestCase(this)">添加测试点</button>
+            </div>
+            <div class="test-cases">${createTestCaseTemplate()}</div>
+          </div>
+          <div class="actions" style="margin-top:12px;justify-content:flex-end;">
+            <button class="btn secondary small" type="button" onclick="removeProblem(this)">删除题目</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function addTestCase(button) {
+      const problem = button.closest(".problem");
+      const list = problem.querySelector(".test-cases");
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = createTestCaseTemplate();
+      list.appendChild(wrapper.firstElementChild);
+    }
+
+    function removeProblem(button) {
+      button.closest(".problem").remove();
+    }
+
+    function removeTestCase(button) {
+      button.closest(".test-case").remove();
+    }
+
+    function toggleField(problem, field, visible) {
+      const group = problem.querySelector(`[data-field="${field}"]`);
+      if (group) group.hidden = !visible;
+    }
+
+    function applyProblemTypeConfig(problem) {
+      const type = problem.querySelector(".p-type").value;
+      const config = problemTypeConfigs[type] || problemTypeConfigs.normal;
+      const currentType = problem.dataset.currentType;
+      const hint = problem.querySelector(".type-hint");
+      hint.textContent = `${config.label}：${config.hint}`;
+      Object.entries(config.fields).forEach(([field, visible]) => toggleField(problem, field, visible));
+      if (currentType !== type) {
+        problem.querySelector(".p-time").value = config.defaults.time;
+        problem.querySelector(".p-mem").value = config.defaults.memory;
+        problem.querySelector(".p-pids").value = config.defaults.pids;
+        problem.querySelector(".p-file-limit").value = config.defaults.file;
+      }
+      problem.dataset.currentType = type;
+    }
+    //增加当次作业的题目
+    function addProblem() {
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = createProblemTemplate();
+      const problem = wrapper.firstElementChild;
+      problem.querySelector(".p-type").addEventListener("change", () => applyProblemTypeConfig(problem));
+      problemList.appendChild(problem);
+      applyProblemTypeConfig(problem);
+    }
+
+    //收集所有题目
+    function collectProblems() {
+      const warnings = [];
+      const problems = [];
+      document.querySelectorAll("#problemList .problem").forEach((problem, index) => {
+        const typeValue = problem.querySelector(".p-type").value;
+        const config = problemTypeConfigs[typeValue] || problemTypeConfigs.normal;
+        const rows = Array.from(problem.querySelectorAll(".test-case"));
+        const testCases = [];
+        let totalTestScore = 0;
+        let hasEmptyCase = false;
+        rows.forEach(row => {
+          const value = row.querySelector(".tc-value")?.value.trim() || "";
+          const type = row.querySelector(".tc-type")?.value || "contains";
+          const score = parseInt(row.querySelector(".tc-score")?.value, 10) || 0;
+          if (!value) {
+            hasEmptyCase = true;
+            return;
+          }
+          totalTestScore += score;
+          testCases.push({ type, value, score });
+        });
+
+        const titleValue = problem.querySelector(".p-title").value.trim() || `未命名题目 ${index + 1}`;
+        const points = parseInt(problem.querySelector(".p-points").value, 10) || 0;
+        if (config.fields.tests && hasEmptyCase) warnings.push(`题目 ${titleValue} 存在空白测试点。`);
+        if (config.fields.tests && rows.length > 0 && totalTestScore !== points) warnings.push(`题目 ${titleValue} 的测试点总分与题目分值不一致。`);
+
+        const allowlist = config.fields.allow
+          ? (problem.querySelector(".p-allow").value || "").split(",").map(item => item.trim()).filter(Boolean)
+          : [];
+        const denylist = config.fields.deny
+          ? (problem.querySelector(".p-deny").value || "").split(",").map(item => item.trim()).filter(Boolean)
+          : [];
+
+        problems.push({
+          title: titleValue,
+          description: problem.querySelector(".p-desc").value.trim(),
+          problem_type: typeValue,
+          points,
+          test_cases: config.fields.tests ? testCases : [],
+          time_limit: parseInt(problem.querySelector(".p-time").value, 10) || 3,
+          memory_limit: config.fields.memory ? (parseInt(problem.querySelector(".p-mem").value, 10) || null) : null,
+          pids_limit: config.fields.pids ? (parseInt(problem.querySelector(".p-pids").value, 10) || null) : null,
+          file_size_limit: config.fields.file ? (parseInt(problem.querySelector(".p-file-limit").value, 10) || null) : null,
+          syscall_allowlist: allowlist,
+          syscall_denylist: denylist
+        });
+      });
+      return { problems, warnings };
+    }
+    
+    //提交作业
+    async function publishAssignment() {
+      const teacher = document.getElementById("teacherName").value.trim();//教师名
+      const title = document.getElementById("assignmentTitle").value.trim();//作业标题
+      const description = document.getElementById("assignmentDesc").value.trim();//作业描述
+      const deadlineRaw = document.getElementById("deadlineAt").value;//截止日期
+      if (!teacher || !title) {
+        publishStatus.textContent = "请先填写教师账号和作业名称。";
+        return;
+      }
+      const { problems, warnings } = collectProblems();
+      if (warnings.length) {
+        publishStatus.textContent = warnings.join(" ");
+        return;
+      }
+      if (!problems.length) {
+        publishStatus.textContent = "请至少添加一道题目。";
+        return;
+      }
+      publishStatus.textContent = "正在发布...";
+
+      //组装成一个大的payload
+      const payload = { title, description, teacher, problems };
+      if (deadlineRaw) payload.deadline_at = deadlineRaw;
+      try {
+        const data = await parseApiResponse(await fetch("/api/assignments", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        }));
+        publishStatus.textContent = `发布成功，作业 ID：${data.assignment_id}`;
+        await loadAssignments();
+      } catch (err) {
+        publishStatus.textContent = `发布失败：${err.message}`;
+      }
+    }
+
+    async function loadAssignments() {
+      assignmentList.textContent = "加载中...";
+      try {
+        const data = await parseApiResponse(await fetch("/api/assignments"));
+        const list = data.assignments || [];
+        plagAssignment.innerHTML = "";
+        versionAssignment.innerHTML = "";
+        versionStudent.innerHTML = "";
+        list.forEach(item => {
+          const option = document.createElement("option");
+          option.value = item.id;
+          option.textContent = `#${item.id} ${item.title}`;
+          plagAssignment.appendChild(option);
+          versionAssignment.appendChild(option.cloneNode(true));
+        });
+        if (!list.length) {
+          assignmentList.textContent = "暂无作业";
+          return;
+        }
+        assignmentList.innerHTML = list.map(item => `
+          <div class="subcard" style="margin-top:10px;">
+            <div><strong>#${item.id} ${escapeHtml(item.title)}</strong> · ${item.problem_count} 道题</div>
+            <div class="muted">${escapeHtml(item.description || "暂无说明")}</div>
+            <div class="muted">教师：${escapeHtml(item.teacher)} | 截止：${escapeHtml(toDisplayTime(item.deadline_at))}</div>
+            <div class="muted">发布时间：${escapeHtml(toDisplayTime(item.created_at))}</div>
+          </div>
+        `).join("");
+      } catch (err) {
+        assignmentList.textContent = `加载失败：${err.message}`;
+      }
+    }
+
+    function renderPlagiarismResults(pairs, withAi) {
+      if (!pairs.length) {
+        plagResults.innerHTML = "";
+        return;
+      }
+      plagResults.innerHTML = pairs.map(pair => {
+        const evidence = pair.evidence || {};
+        const ai = pair.ai_report || null;
+        return `
+          <div class="result-box">
+            <div><strong>题目 ${escapeHtml(pair.problem_id)} · 相似度 ${escapeHtml(pair.score)}</strong></div>
+            <div class="muted">A：提交 ${escapeHtml(pair.submission_a)} / 学生 ${escapeHtml(pair.student_a || "-")}</div>
+            <div class="muted">B：提交 ${escapeHtml(pair.submission_b)} / 学生 ${escapeHtml(pair.student_b || "-")}</div>
+            <div class="muted">共享指纹 ${escapeHtml(evidence.shared_fingerprints || 0)} | Token ${escapeHtml(evidence.token_count_a || 0)}/${escapeHtml(evidence.token_count_b || 0)}</div>
+            ${(evidence.shared_snippets || []).length ? `<div class="code">${evidence.shared_snippets.map(item => escapeHtml(item)).join("<br/>")}</div>` : ""}
+            ${withAi && ai ? `
+              <div style="margin-top:10px;">
+                <div><strong>AI 风险等级：</strong><span class="${riskClass(ai.risk_level)}">${escapeHtml(ai.risk_level || "unknown")}</span></div>
+                <div class="muted">提供方：${escapeHtml(ai.provider || "")} / 模型：${escapeHtml(ai.model || "")}</div>
+                <div style="margin-top:6px;">${escapeHtml(ai.summary || "")}</div>
+                ${(ai.reasons || []).length ? `<div class="muted" style="margin-top:6px;">原因：${ai.reasons.map(item => escapeHtml(item)).join("；")}</div>` : ""}
+                ${(ai.differences || []).length ? `<div class="muted" style="margin-top:6px;">差异：${ai.differences.map(item => escapeHtml(item)).join("；")}</div>` : ""}
+                <div class="muted" style="margin-top:6px;">建议：${escapeHtml(ai.verdict || "")}</div>
+              </div>
+            ` : ""}
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function runPlagiarism() {
+      const assignmentId = plagAssignment.value;
+      const threshold = parseFloat(document.getElementById("plagThreshold").value) || 0.7;
+      if (!assignmentId) {
+        plagStatus.textContent = "请先选择作业。";
+        return;
+      }
+      plagStatus.textContent = "检测中...";
+      plagResults.innerHTML = "";
+      try {
+        const data = await parseApiResponse(await fetch(`/api/assignments/${assignmentId}/plagiarism?threshold=${threshold}`));
+        lastPlagiarismPairs = data.pairs || [];
+        if (!lastPlagiarismPairs.length) {
+          plagStatus.textContent = "未发现超过阈值的可疑配对。";
+          return;
+        }
+        plagStatus.textContent = `发现 ${lastPlagiarismPairs.length} 组可疑配对。`;
+        renderPlagiarismResults(lastPlagiarismPairs, false);
+      } catch (err) {
+        plagStatus.textContent = `检测失败：${err.message}`;
+      }
+    }
+
+    async function runAiReview() {
+      const assignmentId = plagAssignment.value;
+      const threshold = parseFloat(document.getElementById("plagThreshold").value) || 0.7;
+      if (!assignmentId) {
+        plagStatus.textContent = "请先选择作业。";
+        return;
+      }
+      plagStatus.textContent = "AI 复核中...";
+      try {
+        const data = await parseApiResponse(await fetch(`/api/assignments/${assignmentId}/plagiarism/ai-review?threshold=${threshold}&refresh=true`, {
+          method: "POST"
+        }));
+        lastPlagiarismPairs = data.pairs || [];
+        if (!lastPlagiarismPairs.length) {
+          plagStatus.textContent = "AI 复核未返回可疑结果。";
+          plagResults.innerHTML = "";
+          return;
+        }
+        plagStatus.textContent = `AI 复核完成，共 ${lastPlagiarismPairs.length} 组。`;
+        renderPlagiarismResults(lastPlagiarismPairs, true);
+      } catch (err) {
+        plagStatus.textContent = `AI 复核失败：${err.message}`;
+      }
+    }
+
+    async function exportPlagiarism(format) {
+      const assignmentId = plagAssignment.value;
+      const threshold = parseFloat(document.getElementById("plagThreshold").value) || 0.7;
+      if (!assignmentId) {
+        plagStatus.textContent = "请先选择作业。";
+        return;
+      }
+      try {
+        const resp = await fetch(`/api/assignments/${assignmentId}/plagiarism/export?threshold=${threshold}&format=${encodeURIComponent(format)}`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const blob = await resp.blob();
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `plagiarism_assignment_${assignmentId}.${format}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+        plagStatus.textContent = `已导出 ${format.toUpperCase()} 文件。`;
+      } catch (err) {
+        plagStatus.textContent = `导出失败：${err.message}`;
+      }
+    }
+
+    async function exportAiReview() {
+      const assignmentId = plagAssignment.value;
+      const threshold = parseFloat(document.getElementById("plagThreshold").value) || 0.7;
+      if (!assignmentId) {
+        plagStatus.textContent = "请先选择作业。";
+        return;
+      }
+      try {
+        const resp = await fetch(`/api/assignments/${assignmentId}/plagiarism/ai-review/export?threshold=${threshold}`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const blob = await resp.blob();
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `plagiarism_ai_assignment_${assignmentId}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+        plagStatus.textContent = "AI 复核结果已导出。";
+      } catch (err) {
+        plagStatus.textContent = `导出失败：${err.message}`;
+      }
+    }
+
+    async function loadVersionStudents() {
+      const assignmentId = versionAssignment.value;
+      if (!assignmentId) {
+        versionStatus.textContent = "请先选择作业。";
+        return;
+      }
+      versionStatus.textContent = "加载学生中...";
+      versionStudent.innerHTML = "";
+      versionResults.innerHTML = "";
+      studentOverallFeedback.innerHTML = "";
+      try {
+        const data = await parseApiResponse(await fetch(`/api/assignments/${assignmentId}/version-students`));
+        const students = data.students || [];
+        if (!students.length) {
+          versionStatus.textContent = "该作业暂无版本提交。";
+          return;
+        }
+        students.forEach(item => {
+          const option = document.createElement("option");
+          option.value = item.student;
+          option.textContent = `${item.student}（${item.version_count} 次）`;
+          versionStudent.appendChild(option);
+        });
+        versionStatus.textContent = `已加载 ${students.length} 名学生。`;
+      } catch (err) {
+        versionStatus.textContent = `加载失败：${err.message}`;
+      }
+    }
+
+    async function loadStudentVersions() {
+      const assignmentId = versionAssignment.value;
+      const student = versionStudent.value;
+      if (!assignmentId || !student) {
+        versionStatus.textContent = "请同时选择作业和学生。";
+        return;
+      }
+      versionStatus.textContent = "加载版本中...";
+      versionResults.innerHTML = "";
+      studentOverallFeedback.innerHTML = "";
+      try {
+        const data = await parseApiResponse(await fetch(`/api/assignments/${assignmentId}/versions?student=${encodeURIComponent(student)}`));
+        const versions = data.versions || [];
+        if (!versions.length) {
+          versionStatus.textContent = "暂无版本记录。";
+          return;
+        }
+        versionStatus.textContent = `共 ${versions.length} 个版本。`;
+        versionResults.innerHTML = versions.map(item => `
+          <div class="result-box">
+            <div><strong>v${item.version_no}</strong> | 分数 ${item.total_score} | hash ${escapeHtml(String(item.commit_hash || "").slice(0, 8))}</div>
+            <div class="muted">提交说明：${escapeHtml(item.commit_message || "无")}</div>
+            <div class="muted">状态摘要：${escapeHtml(item.status_summary || "暂无")}</div>
+            <div class="muted">时间：${escapeHtml(toDisplayTime(item.created_at))}</div>
+            <div class="actions" style="margin-top:8px;">
+              <button class="btn secondary small" type="button" onclick="showTeacherVersionFeedback(${item.id})">查看本次建议</button>
+            </div>
+            <div id="teacher-version-feedback-${item.id}"></div>
+          </div>
+        `).join("");
+      } catch (err) {
+        versionStatus.textContent = `加载失败：${err.message}`;
+      }
+    }
+
+    async function showTeacherVersionFeedback(versionId) {
+      const panel = document.getElementById(`teacher-version-feedback-${versionId}`);
+      if (!panel) return;
+      panel.innerHTML = `<div class="muted">正在生成建议...</div>`;
+      try {
+        const data = await parseApiResponse(await fetch(`/api/versions/${versionId}/feedback/generate?refresh=true`, { method: "POST" }));
+        panel.innerHTML = renderFeedbackBox(`版本 ${versionId} 的 AI 建议`, data.feedback);
+      } catch (err) {
+        panel.innerHTML = `<div class="muted">生成失败：${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    async function loadStudentOverallFeedback() {
+      const assignmentId = versionAssignment.value;
+      const student = versionStudent.value;
+      if (!assignmentId || !student) {
+        versionStatus.textContent = "请同时选择作业和学生。";
+        return;
+      }
+      studentOverallFeedback.innerHTML = `<div class="muted">正在生成总体建议...</div>`;
+      try {
+        const data = await parseApiResponse(await fetch(`/api/assignments/${assignmentId}/students/${encodeURIComponent(student)}/feedback/generate?refresh=true`, {
+          method: "POST"
+        }));
+        studentOverallFeedback.innerHTML = renderFeedbackBox(`${student} 的总体建议`, data.feedback);
+      } catch (err) {
+        studentOverallFeedback.innerHTML = `<div class="muted">生成失败：${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    async function loadStudentFinalScore(policy) {
+      const assignmentId = versionAssignment.value;
+      const student = versionStudent.value;
+      if (!assignmentId || !student) {
+        versionStatus.textContent = "请同时选择作业和学生。";
+        return;
+      }
+      try {
+        const data = await parseApiResponse(await fetch(`/api/assignments/${assignmentId}/final-score?student=${encodeURIComponent(student)}&policy=${policy}`));
+        if (!data.final) {
+          versionStatus.textContent = `策略 ${policy} 下暂无可用版本。`;
+          return;
+        }
+        versionStatus.textContent = `策略 ${policy}：v${data.final.version_no}，分数 ${data.final.total_score}`;
+      } catch (err) {
+        versionStatus.textContent = `查询失败：${err.message}`;
+      }
+    }
+
+    async function exportStudentVersions() {
+      const assignmentId = versionAssignment.value;
+      const student = versionStudent.value;
+      if (!assignmentId || !student) {
+        versionStatus.textContent = "请同时选择作业和学生。";
+        return;
+      }
+      try {
+        const resp = await fetch(`/api/assignments/${assignmentId}/versions/export?student=${encodeURIComponent(student)}`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const blob = await resp.blob();
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `versions_assignment_${assignmentId}_${student}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+        versionStatus.textContent = "版本记录已导出。";
+      } catch (err) {
+        versionStatus.textContent = `导出失败：${err.message}`;
+      }
+    }
+
+    function logout() {
+      sessionStorage.removeItem(SESSION_KEY);
+      window.location.href = "login.html";
+    }
+
+    setTeacherFeature("assignment");
+    addProblem();
+    loadAssignments();
+  </script>
+</body>
+</html>
+
+

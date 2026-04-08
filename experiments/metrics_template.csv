@@ -1,0 +1,7 @@
+metric_name,definition,value,unit,notes
+avg_eval_latency,Average /judge latency over all samples,,,ms,
+ac_rate,AC submissions / total submissions,,%,,
+expected_match_rate,Judger status == expected_status,,%,,
+plagiarism_precision,Detected plagiarism pairs that are true positives,,%,optional
+plagiarism_recall,True plagiarism pairs detected by system,,%,optional
+teacher_time_saved,Estimated reduction vs manual grading,,minutes,per assignment batch
